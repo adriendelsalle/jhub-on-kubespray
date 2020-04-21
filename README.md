@@ -22,7 +22,9 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 ---
 ## Configuration
 
-- Hardware: 4 CPUs (amd64), 16GB RAM
+- Hardware: 
+  - CPU: 2 preferable
+  - RAM: 1024MB/1500MB for worker/master nodes recommended, configurable in kubespray
 - O/S: Ubuntu 19.10 Eoan
 - Kubespray: 2.12.5
 - Python: 3.7
