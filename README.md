@@ -181,7 +181,25 @@ echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/al
 
 ### Deploy your cluster!
 
-Do the deployment by running Ansible playbook command.
+- Check localhost vs nodes usernames
+
+If your localhost username differ from a node username (the one that owns your SSH public key), you must specify it to Ansible by editing (manually) the hosts.yaml file.
+
+Example:
+- localhost user: foo
+- node user: bar
+
+```
+all:
+  hosts:
+    tower:
+      ansible_host: 192.168.0.1
+      ip: 192.168.0.1
+      access_ip: 192.168.0.1
+      ansible_ssh_user: bar
+```
+
+- Do the deployment by running Ansible playbook command.
 
 ``` bash
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
