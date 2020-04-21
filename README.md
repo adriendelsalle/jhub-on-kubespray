@@ -3,7 +3,7 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 ---
 # Table of Contents
 1. [Configuration used for this tutorial](#Configuration)
-2. [Bootstrap the O/S](#Bootstrap-O\/S)
+2. [Bootstrap the O/S](#Bootstrap-OS)
 3. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [Enable SSH using keys](#Enable-SSH-using-keys)
    2. [IPv4 forwarding](#IPv4-forwarding)
