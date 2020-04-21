@@ -142,7 +142,8 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inv
 
 ## Set Docker version to 19.03, since 18.09 is not available in apt sources
 echo "docker_version: 19.03"  >> group_vars/all/docker.yaml
-## Set resolv.conf to the right file, only fixed for Ubuntu 18.* by https://github.com/kubernetes-sigs/kubespray/pull/3335
+## Set resolv.conf to the right file, only fixed for Ubuntu 18.* since 19.* are not supported.
+## See https://github.com/kubernetes-sigs/kubespray/pull/3335
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
 ```
 
