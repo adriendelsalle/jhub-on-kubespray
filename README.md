@@ -98,8 +98,10 @@ Update the version number to latest available!
 mkdir -p ~/projects/ && \
 cd ~/projects/ && \
 curl -L https://github.com/kubernetes-sigs/kubespray/archive/v2.12.5.tar.gz | tar xvz && \
-cd kubespray-2.12.5
+mv kubespray-2.12.5 kubespray && \
+cd kubespray
 ```
+> The kubespray directory is renamed without version number to have generic code below.
 
 ### Install Kubespray requirements
 
@@ -135,21 +137,43 @@ First copy the default settings from sample cluster.
 # Copy ``inventory/sample`` as ``inventory/mycluster``
 cp -rfp inventory/sample inventory/mycluster
 ```
-> Be sure you are still in the ~/projects/kubespray-x.y.z/ directory before executing this command!
+> Be sure you are still in the ~/projects/kubespray/ directory before executing this command!
 
 Then customize your new cluster
 
+- Update Ansible inventory file with inventory builder
+
 ``` bash
-# Update Ansible inventory file with inventory builder
-declare -a IPS=(10.10.1.3 10.10.1.4 10.10.1.5)
-CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+declare -a IPS=(<node1-ip> <node2-ip> ...)
+CONFIG_FILE=inventory/mycluster/hosts.yaml python contrib/inventory_builder/inventory.py ${IPS[@]}
+```
+- (optional) Rename your nodes or deactivate hostname renaming
 
-# Review and change parameters under ``inventory/mycluster/group_vars``
+If not done, your cluster nodes will be named node1, node2, etc.
 
-## Set Docker version to 19.03, since 18.09 is not available in apt sources
+Edit file ~/projects/kubespray/inventory/mycluster/hosts.yaml
+
+``` bash
+sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.yaml
+```
+
+OR
+
+``` bash
+echo "override_system_hostname: false" >>  group_vars/all/all.yaml
+```
+
+- Set Docker version to 19.03, since 18.09 is not available in apt sources
+
+``` bash
 echo "docker_version: 19.03"  >> group_vars/all/docker.yaml
-## Set resolv.conf to the right file, only fixed for Ubuntu 18.* since 19.* are not supported.
-## See https://github.com/kubernetes-sigs/kubespray/pull/3335
+```
+
+- Set resolv.conf to the right file, only fixed for Ubuntu 18.* since 19.* are not supported.
+
+See https://github.com/kubernetes-sigs/kubespray/pull/3335
+
+``` bash
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
 ```
 
@@ -158,9 +182,5 @@ echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/al
 Do the deployment by running Ansible playbook command.
 
 ``` bash
-# Deploy Kubespray with Ansible Playbook - run the playbook as root
-# The option `--become` is required, as for example writing SSL keys in /etc/,
-# installing packages and interacting with various systemd daemons.
-# Without --become the playbook will fail to run!
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
 ```
