@@ -95,6 +95,8 @@ Get Kubespray source code from its repo, prefer a stable release vs master.
 Update the version number to latest available!
 
 ``` bash
+mkdir -p ~/projects/ && \
+cd ~/projects/ && \
 curl -L https://github.com/kubernetes-sigs/kubespray/archive/v2.12.5.tar.gz | tar xvz && \
 cd kubespray-2.12.5
 ```
@@ -103,22 +105,26 @@ cd kubespray-2.12.5
 
 Install Kubespray requirements in a Python 3 environnement.
 
-We choose to use a Miniconda3 env:
-- Download and install Miniconda3 : 
+- Install Python 3
 
-
-- Create a conda env
+Also install pip (package installer for Python) and venv to create virtual environnement (see below).
 
 ``` bash
-conda create -y -n kubespray python=3.7 pip
-conda activate kubespray
+sudo apt-get install python3.7 python3-pip python3-venv
+```
+
+- Create a virtual env to segregate your workspace
+
+``` bash
+python3 -m venv ~/projects/kubespray-venv
+source ~/projects/kubespray-venv/bin/activate
 ```
 
 - Install Kubespray dependencies
 
 ``` bash
 # Install dependencies from ``requirements.txt``
-sudo pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Create a new cluster configuration
@@ -129,6 +135,7 @@ First copy the default settings from sample cluster.
 # Copy ``inventory/sample`` as ``inventory/mycluster``
 cp -rfp inventory/sample inventory/mycluster
 ```
+> Be sure you are still in the ~/projects/kubespray-x.y.z/ directory before executing this command!
 
 Then customize your new cluster
 
