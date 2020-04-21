@@ -12,7 +12,7 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 4. [The missing parts of Kubernetes](#the-missing-parts-of-kubernetes)
-   1. [Install a load balancer]()
+   1. [Load balancer](#load-balancer)
    2. [StorageClass and provider]()
 5. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
@@ -208,6 +208,11 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 
 ---
 ## The missing parts of Kubernetes
+
+### Load balancer
+
+JupyterHub will expose a service waiting for a `Load balancer` to get and redirect traffic.
+It will be achieve on our bare metal Kubernetes cluster using MetalLB.
 
 ---
 ## Install JupyterHub
