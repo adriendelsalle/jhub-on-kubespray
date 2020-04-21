@@ -28,7 +28,7 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray
 - O/S: Ubuntu 19.10 Eoan
 - Kubespray: 2.12.5
 - Python: 3.7
-
+- Helm: 3.1.2
 
 > Note that Ubuntu 19.10 Eoan is not part of the [supported linux distribution](https://github.com/kubernetes-sigs/kubespray#supported-linux-distributions). It requires a patch described in 
 
