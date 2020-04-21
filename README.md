@@ -8,18 +8,18 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray
 3. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [Enable SSH using keys](#Enable-SSH-using-keys)
    2. [IPv4 forwarding](#IPv4-forwarding)
-   3. [Get Kubespray](#Get-kubespray)
+   3. [Get Kubespray](#Get-Kubespray)
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
    7. []()
-4. [The missing parts of Kubernetes]
-   1. [Install a load balancer]
-   2. [StorageClass and provider]
+4. [The missing parts of Kubernetes]()
+   1. [Install a load balancer]()
+   2. [StorageClass and provider]()
 5. [Install JupyterHub]()
-   1. [Install Helm]
-   2. [Deploy JupyterHub from Helm chart]
-6. [Enjoy!]
+   1. [Install Helm]()
+   2. [Deploy JupyterHub from Helm chart]()
+6. [Enjoy!]()
 
 ---
 ## Configuration
