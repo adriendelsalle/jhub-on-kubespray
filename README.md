@@ -159,6 +159,8 @@ sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.
 
 OR
 
+Keep the current hostnames
+
 ``` bash
 echo "override_system_hostname: false" >>  group_vars/all/all.yaml
 ```
