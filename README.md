@@ -11,14 +11,13 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
-   7. []()
-4. [The missing parts of Kubernetes]()
+4. [The missing parts of Kubernetes](#the-missing-parts-of-kubernetes)
    1. [Install a load balancer]()
    2. [StorageClass and provider]()
-5. [Install JupyterHub]()
+5. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
    2. [Deploy JupyterHub from Helm chart]()
-6. [Enjoy!]()
+6. [Enjoy!](#enjoy)
 
 ---
 ## Configuration
@@ -204,3 +203,15 @@ all:
 ``` bash
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
 ```
+
+---
+## The missing parts of Kubernetes
+
+---
+## Install JupyterHub
+
+---
+## Enjoy!
+
+I hope this tutorial was helpful!
+Do not hesitate to make PR and have a great moment on JHub.
