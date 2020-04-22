@@ -2,7 +2,7 @@
 1. [Configuration used for this tutorial](#Configuration)
 2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [System update](#system-update)
-   2. [SSH access](ssh-access)
+   2. [SSH access](#ssh-access)
    3. [IPv4 forwarding](#IPv4-forwarding)
    4. [Turn off swap](#turn-off-swap)
    3. [Get Kubespray](#Get-Kubespray)
