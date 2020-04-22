@@ -10,8 +10,8 @@
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 3. [Still missing in your cluster](#still-missing-in-your-cluster)
-   1. [Load balancer](#load-balancer)
-   2. [StorageClass and provisioner](#storageclass-and-provisioner)
+   1. [`LoadBalancer`](#load-balancer)
+   2. [`StorageClass` and provisioner](#storageclass-and-provisioner)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm](#install-helm)
    2. [Deploy JupyterHub from Helm chart](#deploy-jupyterhub-from-helm-chart)
@@ -237,10 +237,13 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 ---
 ## Still missing in your cluster
 
-### Load balancer
+### `LoadBalancer`
 
-JupyterHub will expose a service waiting for a `Load balancer` to get and redirect traffic to the right place.
-It will be achieved on our bare metal Kubernetes cluster using MetalLB.
+JupyterHub will expose a `Service` exposed with the `LoadBalancer` type. On a bare metal cluster, you don't have a load balancer since it's usually part of your cloud provider infrastructure.
+
+For more details, refer to the official [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/).
+
+Fortunately, [MetalLB](https://github.com/metallb/metallb) is a open-source implementation of a load balancer for bare metal deployments!
 
 - Install MetalLB
 
