@@ -2,7 +2,7 @@
 1. [Configuration used for this tutorial](#Configuration)
 2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [System update](#system-update)
-   2. [Enable SSH using keys](#Enable-SSH-using-keys)
+   2. [SSH access](ssh-access)
    3. [IPv4 forwarding](#IPv4-forwarding)
    4. [Turn off swap](#turn-off-swap)
    3. [Get Kubespray](#Get-Kubespray)
@@ -53,7 +53,7 @@ sudo apt-get upgrade
 
 [[Top]](#table-of-contents)
 
-### Enable SSH using keys
+### SSH access
 
 - Install SSH server
 
@@ -64,16 +64,18 @@ Ubuntu `server` images already have SSH server installed.
 sudo apt-get install openssh-server
 ```
 
-  - Create SSH keys
+  - Create SSH key pair
 
-You have to generate SSH keys pairs to allow Kubespray/Ansible automatic login using SSH.
-You can use a different key for each node or use the same for all nodes.
+You have to generate SSH key pair(s) to allow Kubespray/Ansible automatic login using SSH.
+You can use a different key pair for each node or use the same for all nodes.
 
 ``` bash
 ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
 ```
 
-Copy the public part in the ~/.ssh/authorized_keys file of user you will use to login.
+  - Publish your public key on nodes
+  
+Copy the public part in the ~/.ssh/authorized_keys file of user account you will use on node for deployment.
 You will be asked for the password corresponding to <node-user> account, then you will never be asked again for password since SSH key will be used to authenticate.
 
 ``` bash
