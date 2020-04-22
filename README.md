@@ -244,7 +244,7 @@ It will be achieve on our bare metal Kubernetes cluster using MetalLB.
 
 ### StorageClass and provider
 
-JupyterHub will need disk space to write Hub user database as well as the user workspaces.
+JupyterHub will need disk space to write Hub users database as well as the users workspaces.
 
 - In-memory option
 
