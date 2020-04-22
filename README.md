@@ -13,8 +13,8 @@
    1. [Load balancer](#load-balancer)
    2. [StorageClass and provisioner](#storageclass-and-provisioner)
 4. [Install JupyterHub](#install-jupyterhub)
-   1. [Install Helm]()
-   2. [Deploy JupyterHub from Helm chart]()
+   1. [Install Helm](#install-helm)
+   2. [Deploy JupyterHub from Helm chart](#deploy-jupyterhub-from-helm-chart)
 5. [Enjoy!](#enjoy)
 
 ---
@@ -304,41 +304,12 @@ That's it!
 
 ### StorageClass and provisioner
 
-#### Introduction
+Deployments usually require storage in order to persist data since pods are designed to be ephemerals.
 
-JupyterHub will need disk space to write Hub users database as well as the users workspaces.
-
-- In-memory option
-
-You can run JupyterHub with *in-memory* data but in this case you will lose all your data in case of cluster reboot, etc.
-
-From JHub doc:
-> Use an in-memory sqlite database. This should only be used for testing, since the database is erased whenever the hub pod restarts - causing the hub to lose all memory of users who had logged in before.
-
-> When using this for testing, make sure you delete all other objects that the hub has created (such as user pods, user PVCs, etc) every time the hub restarts. Otherwise you might run into errors about duplicate resources.
-
-Add to your `config.yaml` file some additional configuration.
-``` bash
-> cat config.yaml
-proxy:
-  secretToken: "<your-token>"
-
-hub:
-  db:
-    type: sqlite-memory
-
-singleuser:
-  storage:
-    type: sqlite-memory
-```
-
-- PV (persistent volume)
-
-The default behaviour of JupyterHub is to create a Persistent Volume Claim PVC, waiting to the fulfilled by a PV in your Kubernetes cluster.
-
-You now have to create the PV, or let a `provisioner` create it auto*magically* for you when a PVC requests a PV!
-
-There are a lot of ways to create storage in Kubernetes, each one has avantages and drawbacks: some are only local, others cannot be dynamically provisionned, more/less difficult to implement, etc.
+Kubernetes introduced several concepts around this:
+- Persistant Volume: a declaration of an available volume
+- Persistant Volume Claim: a claim for Persistent Volume
+- etc.
 
 For more detailed information, please refer to the official Kubernetes documentation about [storage](https://kubernetes.io/docs/concepts/storage) that covers volumes/PV/PVC/provisioning/etc.
 
@@ -395,13 +366,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-incubator/external
 - Set StorageClass
 
 ``` bash
-kubectl apply -f nfs-storageclass.yaml
-```
-
-with
-
-``` bash
-> cat nfs-storageclass.yaml
+cat << EOF | kubectl apply -f -
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -411,6 +376,7 @@ metadata:
 provisioner: nfs-provisioner
 parameters:
   archiveOnDelete: "false"
+EOF
 ```
 
 We declare the `StorageClass` as default one to automatically be selected by PVCs.
@@ -418,12 +384,7 @@ We declare the `StorageClass` as default one to automatically be selected by PVC
 - Set Provisioner
 
 ``` bash
-kubectl apply -f nfs-provisioner.yaml
-```
-with
-
-``` bash
-> cat nfs-provisoner.yaml
+cat << EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -463,8 +424,11 @@ spec:
           nfs:
             server: <nfs-server-ip>
             path: /mnt/my-nfs
+EOF
 ```
 
+> Don't forget to set <nfs-server-ip> to your nfs server ip! 
+   
   - Check everything is OK
   
 ``` bash
@@ -477,6 +441,71 @@ You should see the deployment of the `Provisioner`, the corresponding `Pod` and 
 
 ---
 ## Install JupyterHub
+
+### Install Helm
+
+Just run:
+
+``` bash
+sudo snap install helm --classic
+```
+
+### Deploy JupyterHub from Helm chart
+
+You can now follow the [zero-to-jupyterhub tutorial](https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-jupyterhub/setup-jupyterhub.html)
+
+- Add Helm repo
+
+``` bash
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update
+```
+
+- Create your configuration file
+
+``` bash
+cat << EOF > jhub-config.yaml
+proxy:
+  secretToken: "<RANDOM_HEX>"
+EOF
+sed -i "s/<RANDOM_HEX>/$(openssl rand -hex 32)/g" jhub-config.yaml
+```
+
+
+If you don't implement the [StorageClass and Provisioner](#storageclass-and-provisioner), you have to modify your configuration file to store information *in-memory*. In that case you will lose all your data in case of cluster reboot, etc.
+
+From JHub doc:
+> Use an in-memory sqlite database. This should only be used for testing, since the database is erased whenever the hub pod restarts - causing the hub to lose all memory of users who had logged in before.
+
+> When using this for testing, make sure you delete all other objects that the hub has created (such as user pods, user PVCs, etc) every time the hub restarts. Otherwise you might run into errors about duplicate resources.
+
+``` bash
+cat << EOF >> jhub-config.yaml
+
+hub:
+  db:
+    type: sqlite-memory
+
+singleuser:
+  storage:
+    type: sqlite-memory
+EOF
+```
+
+- Deploy JupyterHub
+
+``` bash
+RELEASE=jhub
+NAMESPACE=jhub
+
+kubectl create namespace $NAMESPACE
+helm upgrade --install $RELEASE jupyterhub/jupyterhub \
+  --namespace $NAMESPACE  \
+  --version=0.9.0 \
+  --values config.yaml
+```
+
+Never forget that the Helm chart version differ from JupyterHub version! See the [jupyterhub/helm-chart repo](https://github.com/jupyterhub/helm-chart).
 
 ---
 ## Enjoy!
