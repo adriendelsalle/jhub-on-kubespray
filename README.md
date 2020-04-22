@@ -11,7 +11,7 @@
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 3. [Still missing in your cluster](#still-missing-in-your-cluster)
    1. [Load balancer](#load-balancer)
-   2. [StorageClass and provider](#storageclasse-and-provider)
+   2. [StorageClass and provider](#storageclass-and-provider)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
    2. [Deploy JupyterHub from Helm chart]()
