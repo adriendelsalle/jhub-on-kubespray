@@ -237,8 +237,66 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 
 ### Load balancer
 
-JupyterHub will expose a service waiting for a `Load balancer` to get and redirect traffic.
-It will be achieve on our bare metal Kubernetes cluster using MetalLB.
+JupyterHub will expose a service waiting for a `Load balancer` to get and redirect traffic to the right place.
+It will be achieved on our bare metal Kubernetes cluster using MetalLB.
+
+- Install MetalLB
+
+Follow the [configuration guide](https://metallb.universe.tf/installation/).
+
+``` bash
+kubectl edit configmap -n kube-system kube-proxy
+```
+
+and set:
+
+```
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: "ipvs"
+ipvs:
+  strictARP: true
+```
+
+Then apply the manifests:
+
+``` bash
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/namespace.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/metallb.yaml
+# On first install only
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+```
+
+- Set MetalLB configuration
+
+To allow the load balancer to distribute external IPs, you must specify in its configuration what is the IP chunk allocated for it.
+
+It is done by applying the following [configuration file](https://metallb.universe.tf/configuration/#layer-2-configuration):
+
+``` bash
+kubectl apply -f metallb-config.yaml
+```
+
+with
+
+``` bash
+cat metallb-config.yaml 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - <your-ip-range>
+```
+
+> 
+That's it!
 
 [[Top]](#table-of-contents)
 
