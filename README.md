@@ -11,7 +11,7 @@
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 3. [Still missing in your cluster](#still-missing-in-your-cluster)
    1. [Load balancer](#load-balancer)
-   2. [StorageClass and provider](#storageclass-and-provider)
+   2. [StorageClass and provisioner](#storageclass-and-provisioner)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
    2. [Deploy JupyterHub from Helm chart]()
@@ -242,7 +242,7 @@ It will be achieve on our bare metal Kubernetes cluster using MetalLB.
 
 [[Top]](#table-of-contents)
 
-### StorageClass and provider
+### StorageClass and provisioner
 
 JupyterHub will need disk space to write Hub users database as well as the users workspaces.
 
