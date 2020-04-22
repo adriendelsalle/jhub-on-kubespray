@@ -38,7 +38,7 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 
 These steps are in order to fulfill the Kubespray [requirements](https://github.com/kubernetes-sigs/kubespray#requirements).
 
-### Update your system
+### System update
 
 It's always a good pratice to start with a system update.
 
