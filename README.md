@@ -274,7 +274,50 @@ singleuser:
 
 The default behaviour of JupyterHub is to create a Persistent Volume Claim PVC, waiting to the fulfilled by a PV in your Kubernetes cluster.
 
-You now have to create the PV! In this tutorial, you will use a NFS one.
+You now have to create the PV, or let a `provisioner` create it auto*magically* for you when a PVC requests a PV!
+
+There are a lot of ways to create storage in Kubernetes, each one has avantages and drawbacks: some are only local, others cannot be dynamically provisionned, more/less difficult to implement, etc.
+
+For more detailed information, please refer to the official Kubernetes documentation about [storage](https://kubernetes.io/docs/concepts/storage) that covers volumes/PV/PVC/provisioning/etc.
+
+In this tutorial, you will use a `nfs` volume type for its simplicity, accessiblity between nodes and capability to be dynamically provisioned.
+
+#### Set up the NFS server
+
+From [Vitux tutorial](https://vitux.com/install-nfs-server-and-client-on-ubuntu/?__cf_chl_jschl_tk__=50c8eadb5fa04314c2916407c2751f68687aeb48-1587555276-0-AWkNR6Qizn6tsLLBsSUH1l_YOBi7OZLqRBXQzexN7S5FrW4QxNdSiOTwuRQaub2rjdraGI6zFVbGeKntmz-ZQW76uKjX4COBy5N14m8WXi0BRXvUlWDMxEvmlKs8iUrosn1-ctl7DoZlWbMWGIOFkGljgabLZv3CHBb0e-RpDRcUmuqFnv6Ct9PLcS2VGadHYKIuK5z9nKzU3qKACh3wHROeVhVH1Ibsel8NhqGCdPCWYBJn4EwR9WkUjFvf1Rycgv9751PotGabEq2l-_jipEoKgeo29yIk-uaWemKOPBiNvxjKhlZwNigfLGMAm4Mmuv6qWuGEKqQNKfLDjQjSRWwoSOqrRMbnXFs92AQCMt5knujCrI6RCDW699xX_fhnSmVjLDq_ra-BT3nVTRJV1D8).
+
+  - Install NFS server
+
+Just pick a machine on the same network as your cluster nodes (it can be one of them), and run:
+
+``` bash
+apt-get install -y nfs-kernel-server
+```
+  - Choose export directory
+  
+Choose or create a directory and share it:
+
+``` bash
+mkdir -p /mnt/my-nfs
+```
+
+As we want all clients to have access, change its permissions
+
+``` bash
+chown nobody:nogroup /mnt/my-nfs
+chmod 777 /mnt/my-nfs
+```
+
+  - Do the NFS export
+
+``` bash
+echo "/mnt/my-fns <subnetIP/24>(rw,sync,no_subtree_check)" >> /etc/exports
+exportfs -a
+systemctl restart nfs-kernel-server
+```
+
+> You have to replace `subnetIP/24` by a correct CIDR.
+
 
 [[Top]](#table-of-contents)
 
