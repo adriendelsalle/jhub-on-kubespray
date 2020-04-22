@@ -293,7 +293,7 @@ data:
 EOF
 ```
 
-> Don't forget to set <your-ip-range> to the ip chunk you want to use! 
+> Don't forget to set *your-ip-range* to the ip chunk you want to use! 
 
 That's it!
 
@@ -424,7 +424,7 @@ spec:
 EOF
 ```
 
-> Don't forget to set <nfs-server-ip> to your nfs server ip! 
+> Don't forget to set *nfs-server-ip* to your nfs server ip! 
    
   - Check everything is OK
   
