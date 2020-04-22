@@ -244,7 +244,7 @@ It will be achieved on our bare metal Kubernetes cluster using MetalLB.
 
 - Install MetalLB
 
-Follow the [configuration guide](https://metallb.universe.tf/installation/).
+Follow the official [installation guide](https://metallb.universe.tf/installation/).
 
 ``` bash
 kubectl edit configmap -n kube-system kube-proxy
