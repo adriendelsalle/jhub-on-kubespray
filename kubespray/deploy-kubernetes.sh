@@ -9,18 +9,19 @@ sudo apt-get upgrade
 sudo apt-get install openssh-server
 
 ## Create SSH key pair
-ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
+ssh-keygen -b 2048 -t rsa -f /home/adrien/.ssh/id_rsa -q -N ""
 
 ## Publish your public key on nodes
-scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@<node-ip>:/home/<node-user>/.ssh
-ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/.ssh/id_rsa.pub"
+for ip in 192.168.1.3 192.168.1.78 192.168.1.118; do
+  scp /home/adrien/.ssh/id_rsa.pub adrien@$ip:/home/adrien/.ssh
+  ssh adrien@$ip "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys && rm ~/.ssh/id_rsa.pub"
+done
 
 # IPv4 forwarding
-sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+# Will be done in prepare-cluster.yaml Ansible playbook
 
 # Turn off swap
-sudo swapoff -a && \
-sudo sed -i '/ swap / s/^/#/' /etc/fstab
+# Should be done by cluster.yaml Ansible playbook
 
 # Get Kubespray
 mkdir -p ~/projects/ && \
@@ -58,4 +59,7 @@ echo "docker_version: 19.03"  >> group_vars/all/docker.yaml
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
 
 # Deploy your cluster
+## Deal with IPv4 forwarding
+ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root prepare-cluster.yml
+## Run Kubespray playbook
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
