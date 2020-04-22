@@ -10,8 +10,8 @@
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 3. [Still missing in your cluster](#still-missing-in-your-cluster)
-   1. [`LoadBalancer`](#loadbalancer)
-   2. [`StorageClass` and provisioner](#storageclass-and-provisioner)
+   1. [Set a `LoadBalancer`](#set-a-loadbalancer)
+   2. [Set a `StorageClass` and a provisioner](#set-a-storageclass-and-a-provisioner)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm](#install-helm)
    2. [Deploy JupyterHub from Helm chart](#deploy-jupyterhub-from-helm-chart)
@@ -237,7 +237,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 ---
 ## Still missing in your cluster
 
-### `LoadBalancer`
+### Set a `LoadBalancer`
 
 JupyterHub will expose a `Service` exposed with the `LoadBalancer` type. On a bare metal cluster, you don't have a load balancer since it's usually part of your cloud provider infrastructure.
 
@@ -299,13 +299,13 @@ That's it!
 
 [[Top]](#table-of-contents)
 
-### StorageClass and provisioner
+### Set a `StorageClass` and a provisioner
 
 Deployments usually require storage in order to persist data since pods are designed to be ephemerals.
 
 Kubernetes introduced several concepts around this:
-- Persistant Volume: a declaration of an available volume
-- Persistant Volume Claim: a claim for Persistent Volume
+- Persistant Volume `PV`: a declaration of an available volume
+- Persistant Volume Claim `PVC`: a claim for Persistent Volume
 - etc.
 
 For more detailed information, please refer to the official Kubernetes documentation about [storage](https://kubernetes.io/docs/concepts/storage) that covers volumes/PV/PVC/provisioning/etc.
@@ -348,7 +348,7 @@ systemctl restart nfs-kernel-server
 
 > You have to replace `subnetIP/24` by a correct CIDR.
 
-#### Define StorageClass and Provisioner
+#### Define the `StorageClass` and the provisioner
 
 From [Yolanda tutorial](http://teknoarticles.blogspot.com/2018/10/setup-nfs-client-provisioner-in.html)
 
@@ -360,7 +360,7 @@ We will use [external-storage](https://github.com/kubernetes-incubator/external-
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml
 ```
 
-- Set StorageClass
+- Set `StorageClass`
 
 ``` bash
 cat << EOF | kubectl apply -f -
@@ -378,7 +378,7 @@ EOF
 
 We declare the `StorageClass` as default one to automatically be selected by PVCs.
 
-- Set Provisioner
+- Set provisioner
 
 ``` bash
 cat << EOF | kubectl apply -f -
@@ -469,7 +469,7 @@ sed -i "s/<RANDOM_HEX>/$(openssl rand -hex 32)/g" jhub-config.yaml
 ```
 
 
-If you don't implement the [StorageClass and Provisioner](#storageclass-and-provisioner), you have to modify your configuration file to store information *in-memory*. In that case you will lose all your data in case of cluster reboot, etc.
+If you don't implement the [`StorageClass` and provisioner](#set-a-storageclass-and-a-provisioner) part of this tutorial, you have to modify your configuration file to store information *in-memory*. In that case you will lose all your data in case of cluster reboot, etc.
 
 From JHub doc:
 > Use an in-memory sqlite database. This should only be used for testing, since the database is erased whenever the hub pod restarts - causing the hub to lose all memory of users who had logged in before.
