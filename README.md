@@ -88,7 +88,13 @@ ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/
 
 ### IPv4 forwarding
 
-IPv4 forwarding will be automatically turned on by Ansible playbook.
+Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubepsray.
+
+To do it manually, run as sudo:
+
+``` bash
+echo 1 > /proc/sys/net/ipv4/ip_forward
+```
 
 ### Get Kubespray
 
