@@ -313,13 +313,105 @@ chmod 777 /mnt/my-nfs
   - Do the NFS export
 
 ``` bash
-echo "/mnt/my-fns <subnetIP/24>(rw,sync,no_subtree_check)" >> /etc/exports
+echo "/mnt/my-nfs <subnetIP/24>(rw,sync,no_subtree_check)" >> /etc/exports
 exportfs -a
 systemctl restart nfs-kernel-server
 ```
 
 > You have to replace `subnetIP/24` by a correct CIDR.
 
+#### Define StorageClass and Provisioner
+
+From [Yolanda tutorial](http://teknoarticles.blogspot.com/2018/10/setup-nfs-client-provisioner-in.html)
+
+We will use [external-storage](https://github.com/kubernetes-incubator/external-storage] template.
+
+- Set authorizations
+
+``` bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml
+```
+
+- Set StorageClass
+
+``` bash
+kubectl apply -f nfs-storageclass.yaml
+```
+
+with
+
+``` bash
+> cat nfs-storageclass.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: managed-nfs-storage
+  annotations: 
+    storageclass.kubernetes.io/is-default-class: true
+provisioner: nfs-provisioner
+parameters:
+  archiveOnDelete: "false"
+```
+
+We declare the `StorageClass` as default one to automatically be selected by PVCs.
+
+- Set Provisioner
+
+``` bash
+kubectl apply -f nfs-provisioner.yaml
+```
+with
+
+``` bash
+> cat nfs-provisoner.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client-provisioner
+  labels:
+    app: nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: nfs-provisioner
+            - name: NFS_SERVER
+              value: <nfs-server-ip>
+            - name: NFS_PATH
+              value: /mnt/my-nfs
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: <nfs-server-ip>
+            path: /mnt/my-nfs
+```
+
+  - Check everything is OK
+  
+``` bash
+kubectl get deployments.apps,pods,sc -n default
+```
+
+You should see the deployment of the `Provisioner`, the corresponding `Pod` and also the `StorageClass` as default one.
 
 [[Top]](#table-of-contents)
 
