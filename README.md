@@ -1,4 +1,4 @@
-# Table of Contents
+## Table of Contents
 1. [Configuration used for this tutorial](#Configuration)
 2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [System update](#system-update)
@@ -32,7 +32,7 @@ This tutorial is about running a JupyterHub instance on a kube cluster deployed 
 
 > Note that Ubuntu 19.10 Eoan is not a [Kubespray supported linux distribution](https://github.com/kubernetes-sigs/kubespray#supported-linux-distributions). It requires a patch described [here](#then-customize-your-new-cluster). 
 
-<div style="text-align: right"> <a href="https://github.com/adriendelsalle/jhub-on-kubespray#table-of-contents"> [Top] </a></div>
+###### [<Top>](#table-of-contents)
 
 ---
 ## Install Kubernetes using Kubespray
