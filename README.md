@@ -241,7 +241,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 
 JupyterHub will expose a `Service` exposed with the `LoadBalancer` type. On a bare metal cluster, you don't have a load balancer since it's usually part of your cloud provider infrastructure.
 
-For more details, refer to the official [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/).
+For more details, refer to the official [documentation](https://kubernetes.io/docs/concepts/services-networking/service/).
 
 Fortunately, [MetalLB](https://github.com/metallb/metallb) is a open-source implementation of a load balancer for bare metal deployments!
 
