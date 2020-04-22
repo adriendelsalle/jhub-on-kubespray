@@ -271,9 +271,7 @@ kubectl create secret generic -n metallb-system memberlist --from-literal=secret
 
 - Set MetalLB configuration
 
-To allow the load balancer to distribute external IPs, you must specify in its configuration what is the IP chunk allocated for it.
-
-It is done by applying the following [configuration file](https://metallb.universe.tf/configuration/#layer-2-configuration):
+To allow the load balancer to distribute external IPs, you must specify in its [configuration](https://metallb.universe.tf/configuration/#layer-2-configuration) what is the IP chunk allocated for it.
 
 ``` bash
 cat << EOF | kubectl apply -f -
