@@ -9,9 +9,9 @@
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
-3. [The missing parts of Kubernetes](#the-missing-parts-of-kubernetes)
+3. [Still missing in your cluster](#still-missing-in-your-cluster)
    1. [Load balancer](#load-balancer)
-   2. [StorageClass and provider]()
+   2. [StorageClass and provider](#storageclasse-and-provider)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
    2. [Deploy JupyterHub from Helm chart]()
@@ -32,7 +32,7 @@ This tutorial is about running a JupyterHub instance on a kube cluster deployed 
 
 > Note that Ubuntu 19.10 Eoan is not a [Kubespray supported linux distribution](https://github.com/kubernetes-sigs/kubespray#supported-linux-distributions). It requires a patch described [here](#then-customize-your-new-cluster). 
 
-###### [<Top>](#table-of-contents)
+[[Top]](#table-of-contents)
 
 ---
 ## Install Kubernetes using Kubespray
@@ -50,6 +50,8 @@ sudo apt-get upgrade
 
 > Do this on your localhost (used to run Kubespray).
 > Kubespray will take care of system updates on the declared nodes.
+
+[[Top]](#table-of-contents)
 
 ### Enable SSH using keys
 
@@ -77,7 +79,9 @@ You will be asked for the password corresponding to <node-user> account, then yo
 ``` bash
 scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@<node-ip>:/home/<node-user>/.ssh
 ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/.ssh/id_rsa.pub"
+
 ```
+[[Top]](#table-of-contents)
 
 ### IPv4 forwarding
 
@@ -89,6 +93,8 @@ To do it manually, run as sudo:
 echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
+[[Top]](#table-of-contents)
+
 ### Turn off swap
 
 It is required by kubernetes.
@@ -99,6 +105,8 @@ swapoff -a && sed -i 'swap / s/^/#/' /etc/fstab
 ```
 
 > You can use instead the `prepare-cluster.yaml` playbook set up in this tutorial
+
+[[Top]](#table-of-contents)
 
 ### Get Kubespray
 
@@ -113,6 +121,8 @@ mv kubespray-2.12.5 kubespray && \
 cd kubespray
 ```
 > The kubespray directory is renamed without version number to have generic code below.
+
+[[Top]](#table-of-contents)
 
 ### Install Kubespray requirements
 
@@ -139,6 +149,8 @@ source ~/projects/kubespray-venv/bin/activate
 # Install dependencies from ``requirements.txt``
 pip install -r requirements.txt
 ```
+
+[[Top]](#table-of-contents)
 
 ### Create a new cluster configuration
 
@@ -190,6 +202,8 @@ See https://github.com/kubernetes-sigs/kubespray/pull/3335
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
 ```
 
+[[Top]](#table-of-contents)
+
 ### Deploy your cluster!
 
 - Check localhost vs nodes usernames
@@ -216,13 +230,53 @@ all:
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
 ```
 
+[[Top]](#table-of-contents)
+
 ---
-## The missing parts of Kubernetes
+## Still missing in your cluster
 
 ### Load balancer
 
 JupyterHub will expose a service waiting for a `Load balancer` to get and redirect traffic.
 It will be achieve on our bare metal Kubernetes cluster using MetalLB.
+
+[[Top]](#table-of-contents)
+
+### StorageClass and provider
+
+JupyterHub will need disk space to write Hub user database as well as the user workspaces.
+
+- In-memory option
+
+You can run JupyterHub with *in-memory* data but in this case you will lose all your data in case of cluster reboot, etc.
+
+From JHub doc:
+> Use an in-memory sqlite database. This should only be used for testing, since the database is erased whenever the hub pod restarts - causing the hub to lose all memory of users who had logged in before.
+
+> When using this for testing, make sure you delete all other objects that the hub has created (such as user pods, user PVCs, etc) every time the hub restarts. Otherwise you might run into errors about duplicate resources.
+
+Add to your `config.yaml` file some additional configuration.
+``` bash
+> cat config.yaml
+proxy:
+  secretToken: "<your-token>"
+
+hub:
+  db:
+    type: sqlite-memory
+
+singleuser:
+  storage:
+    type: sqlite-memory
+```
+
+- PV (persistent volume)
+
+The default behaviour of JupyterHub is to create a Persistent Volume Claim PVC, waiting to the fulfilled by a PV in your Kubernetes cluster.
+
+You now have to create the PV! In this tutorial, you will use a NFS one.
+
+[[Top]](#table-of-contents)
 
 ---
 ## Install JupyterHub
