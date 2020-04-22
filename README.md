@@ -3,21 +3,22 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 ---
 # Table of Contents
 1. [Configuration used for this tutorial](#Configuration)
-2. [Bootstrap the O/S](#Bootstrap-OS)
-3. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
-   1. [Enable SSH using keys](#Enable-SSH-using-keys)
-   2. [IPv4 forwarding](#IPv4-forwarding)
+2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
+   1. [System update](#system-update)
+   2. [Enable SSH using keys](#Enable-SSH-using-keys)
+   3. [IPv4 forwarding](#IPv4-forwarding)
+   4. [Turn off swap](#turn-off-swap)
    3. [Get Kubespray](#Get-Kubespray)
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
-4. [The missing parts of Kubernetes](#the-missing-parts-of-kubernetes)
+3. [The missing parts of Kubernetes](#the-missing-parts-of-kubernetes)
    1. [Load balancer](#load-balancer)
    2. [StorageClass and provider]()
-5. [Install JupyterHub](#install-jupyterhub)
+4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm]()
    2. [Deploy JupyterHub from Helm chart]()
-6. [Enjoy!](#enjoy)
+5. [Enjoy!](#enjoy)
 
 ---
 ## Configuration
@@ -33,30 +34,21 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 > Note that Ubuntu 19.10 Eoan is not a [Kubespray supported linux distribution](https://github.com/kubernetes-sigs/kubespray#supported-linux-distributions). It requires a patch described [here](#then-customize-your-new-cluster). 
 
 ---
-## Bootstrap O/S
+## Install Kubernetes using Kubespray
 
-This tutorial is based on Linux distribution Ubuntu 19.10 Eoan.
+These steps are in order to fulfill the Kubespray [requirements](https://github.com/kubernetes-sigs/kubespray#requirements).
 
-- Turn off swap (req. by kubernetes)
+### Update your system
 
-``` bash
-swapoff -a && sed -i 'swap / s/^/#/' /etc/fstab
-```
-see : https://github.com/kubernetes/kubernetes/issues/53533
-
-- Update your system
-
-It's always a good pratice to update your system.
+It's always a good pratice to start with a system update.
 
 ``` bash
 sudo apt-get update && \
 sudo apt-get upgrade
 ```
 
----
-## Install Kubernetes using Kubespray
-
-These steps are in order to fulfill the Kubespray [requirements](https://github.com/kubernetes-sigs/kubespray#requirements).
+> Do this on your localhost (used to run Kubespray).
+> Kubespray will take care of system updates on the declared nodes.
 
 ### Enable SSH using keys
 
@@ -95,6 +87,17 @@ To do it manually, run as sudo:
 ``` bash
 echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
+
+### Turn off swap
+
+It is required by kubernetes.
+See : https://github.com/kubernetes/kubernetes/issues/53533
+
+``` bash
+swapoff -a && sed -i 'swap / s/^/#/' /etc/fstab
+```
+
+> You can use instead the `prepare-cluster.yaml` playbook set up in this tutorial
 
 ### Get Kubespray
 
