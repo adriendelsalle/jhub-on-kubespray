@@ -276,13 +276,7 @@ To allow the load balancer to distribute external IPs, you must specify in its c
 It is done by applying the following [configuration file](https://metallb.universe.tf/configuration/#layer-2-configuration):
 
 ``` bash
-kubectl apply -f metallb-config.yaml
-```
-
-with
-
-``` bash
-cat metallb-config.yaml 
+cat << EOF | kubectl apply -f -
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -295,9 +289,11 @@ data:
       protocol: layer2
       addresses:
       - <your-ip-range>
+EOF
 ```
 
-> 
+> Don't forget to set <your-ip-range> to the ip chunk you want to use! 
+
 That's it!
 
 [[Top]](#table-of-contents)
