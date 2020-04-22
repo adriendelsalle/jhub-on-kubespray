@@ -1,6 +1,3 @@
-A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray on bare metal.
-
----
 # Table of Contents
 1. [Configuration used for this tutorial](#Configuration)
 2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
@@ -23,6 +20,8 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 ---
 ## Configuration
 
+This tutorial is about running a JupyterHub instance on a kube cluster deployed with kubespray on bare metal.
+
 - Hardware: 
   - CPU: 2 preferable
   - RAM: 1024MB/1500MB for worker/master nodes recommended, configurable in kubespray
@@ -33,6 +32,7 @@ A tutorial for a JupyterHub instance on a kube cluster deployed with kubespray o
 
 > Note that Ubuntu 19.10 Eoan is not a [Kubespray supported linux distribution](https://github.com/kubernetes-sigs/kubespray#supported-linux-distributions). It requires a patch described [here](#then-customize-your-new-cluster). 
 
+<div style="text-align: right"> [Top](#table-of-contents) </div>
 ---
 ## Install Kubernetes using Kubespray
 
