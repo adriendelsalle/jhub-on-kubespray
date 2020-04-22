@@ -1,0 +1,20 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: "Get IPv4 forwarding status"
+      command: cat /proc/sys/net/ipv4/ip_forward
+      register: ipv4_status
+      changed_when: false
+
+    - name: "Enable IPv4 forwarding"
+      shell: echo 1 > /proc/sys/net/ipv4/ip_forward
+      when: ipv4_status.stdout == "0"
+
+    - name: "Get swap status"
+      command: swapon -s
+      register: swap_status
+      changed_when: false
+
+    - name: "Enable IPv4 forwarding"
+      shell: swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
+      when: swap_status.stdout != ""
