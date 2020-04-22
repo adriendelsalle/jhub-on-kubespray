@@ -10,7 +10,7 @@
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster!)
 3. [Still missing in your cluster](#still-missing-in-your-cluster)
-   1. [`LoadBalancer`](#load-balancer)
+   1. [`LoadBalancer`](#loadbalancer)
    2. [`StorageClass` and provisioner](#storageclass-and-provisioner)
 4. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm](#install-helm)
