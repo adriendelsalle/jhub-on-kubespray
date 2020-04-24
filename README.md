@@ -10,6 +10,7 @@
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
    6. [Deploy your cluster!](#Deploy-your-cluster)
+   7. [Access your cluster API](#access-your-cluster-api)
 4. [Still missing in your cluster](#still-missing-in-your-cluster)
    1. [Set a `LoadBalancer`](#set-a-loadbalancer)
    2. [Set a `StorageClass` and a provisioner](#set-a-storageclass-and-a-provisioner)
@@ -264,6 +265,46 @@ It's time to deploy Kubernetes by running the Ansible playbook command.
 
 ``` bash
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
+```
+
+[[Top]](#table-of-contents)
+
+### Access your cluster API
+
+The cluster is created but you currently have no access to its API for configuration purpose.
+
+`kubectl` has been installed by Kubespray on master nodes of your cluster and configuration files saved in root home directory.
+
+If you want to access the cluster API from another computer on your network, install first kubectl.
+
+``` bash
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
+
+In all cases, start by copying configuration files from root home directory to your user account used to deploy kubernetes.
+
+Remember, it owns your SSH public key!
+
+``` bash
+ssh <node-user>@<master-node-ip> "sudo cp -R /root/.kube ~ && sudo chown -R <node-user>:<node-user> ~/.kube" 
+```
+
+If you plan to handle the API from another computer, download those files and update ownership.
+
+``` bash
+scp -r <node-user>@<master-node-ip>:~/.kube ~
+sudo chown -R <local-user>:<local-user> ~/.kube
+ssh <node-user>@<master-node-ip> "rm -r ~/.kube"
+```
+
+> Remove the configuration files from master node user to keep secrets protected
+
+For sanity, use autocompletion!
+
+``` bash
+echo 'source <(kubectl completion bash)' >>~/.bashrc
 ```
 
 [[Top]](#table-of-contents)
