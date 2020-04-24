@@ -24,6 +24,8 @@ This tutorial is about running a JupyterHub instance on a Kubernetes cluster dep
 
 For this purpose and after several attemps with Minikube and kubeadm, with and without VM, I choosed Kubespray using Ansible to deploy Kubernetes. It offers the performance of a bare metal cluster but also scalability and production-ready type of cluster.
 
+[[Top]](#table-of-contents)
+
 ---
 ## Configuration
 
@@ -42,11 +44,11 @@ For this purpose and after several attemps with Minikube and kubeadm, with and w
 ---
 ## Install Kubernetes using Kubespray
 
-These steps are in order to fulfill the Kubespray [requirements](https://github.com/kubernetes-sigs/kubespray#requirements).
+Please follow these steps to fulfill the Kubespray [requirements](https://github.com/kubernetes-sigs/kubespray#requirements).
 
 ### System update
 
-It's always a good pratice to start with a system update.
+It's always a good pratice to start with a system update, especially before installing new packages.
 
 ``` bash
 sudo apt-get update && \
@@ -62,8 +64,8 @@ sudo apt-get upgrade
 
 - Install SSH server
 
-If a node does not have SSH server installed by default, you have to install it.
-Ubuntu `server` images already have SSH server installed.
+If a node does not have SSH a server installed by default, you have to install it to remotely connect this machine.
+Ubuntu `server` O/Ss already have SSH a server installed.
 
 ``` bash
 sudo apt-get install openssh-server
@@ -71,54 +73,59 @@ sudo apt-get install openssh-server
 
   - Create SSH key pair
 
-You have to generate SSH key pair(s) to allow Kubespray/Ansible automatic login using SSH.
+You have to generate one or multiple SSH key pair(s) to allow Kubespray/Ansible automatic login using SSH.
 You can use a different key pair for each node or use the same for all nodes.
 
 ``` bash
 ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
 ```
 
-  - Publish your public key on nodes
+  - Copy your public key(s) on nodes
   
-Copy the public part in the ~/.ssh/authorized_keys file of user account you will use on node for deployment.
-You will be asked for the password corresponding to <node-user> account, then you will never be asked again for password since SSH key will be used to authenticate.
-
+Copy your public key(s) in the ~/.ssh/authorized_keys file of the user accounts you will use on each node for deployment.
+You will be prompted twice for the password corresponding to <node-user> account, the first time for the public key upload using SSH and the second time for adding the public key in the authorized keys file.
+   
 ``` bash
-scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@<node-ip>:/home/<node-user>/.ssh
-ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/.ssh/id_rsa.pub"
-
+for ip in <nod1-ip> <node2-ip> ...; do
+   scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@<node-ip>:/home/<node-user>/.ssh
+   ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/.ssh/id_rsa.pub"
+done
 ```
+
+> You will never be prompted again for password using SSH, the key will be used to authenticate you!
+
 [[Top]](#table-of-contents)
 
 ### IPv4 forwarding
 
 Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubepsray.
 
-To do it manually, run as sudo:
+To do it manually, run the following command:
 
 ``` bash
-echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
 ```
 
 [[Top]](#table-of-contents)
 
 ### Turn off swap
 
-It is required by kubernetes.
-See : https://github.com/kubernetes/kubernetes/issues/53533
+Turning swap off is required by Kubernetes. See this [issue](https://github.com/kubernetes/kubernetes/issues/53533) for more information.
 
 ``` bash
-swapoff -a && sed -i 'swap / s/^/#/' /etc/fstab
+for ip in <nod1-ip> <node2-ip> ...; do
+   sudo swapoff -a && \
+   sudo sed -i '/ swap / s/^/#/' /etc/fstab
+done
 ```
 
-> You can use instead the `prepare-cluster.yaml` playbook set up in this tutorial
+> This step can also be done using the `prepare-cluster.yaml` playbook available in this repo
 
 [[Top]](#table-of-contents)
 
 ### Get Kubespray
 
-Get Kubespray source code from its repo, prefer a stable release vs master.
-Update the version number to latest available!
+Get the Kubespray source code from its repo, prefer a stable release vs master.
 
 ``` bash
 mkdir -p ~/projects/ && \
@@ -127,23 +134,28 @@ curl -L https://github.com/kubernetes-sigs/kubespray/archive/v2.12.5.tar.gz | ta
 mv kubespray-2.12.5 kubespray && \
 cd kubespray
 ```
-> The kubespray directory is renamed without version number to have generic code below.
+
+> The kubespray directory is renamed without version number to have generic code below
+
+> Update the version number to latest available
 
 [[Top]](#table-of-contents)
 
 ### Install Kubespray requirements
 
-Install Kubespray requirements in a Python 3 environnement.
+Kubespray uses Python 3 and several dependencies to be installed.
 
 - Install Python 3
 
-Also install pip (package installer for Python) and venv to create virtual environnement (see below).
+Install Python 3 but also pip (package installer for Python) and venv to create virtual environnements (see below).
 
 ``` bash
 sudo apt-get install python3.7 python3-pip python3-venv
 ```
 
-- Create a virtual env to segregate your workspace
+- Create a virtual env
+
+This is a best isolation pratice using Python to use virtual env (or conda env for conda users).
 
 ``` bash
 python3 -m venv ~/projects/kubespray-venv
@@ -153,7 +165,6 @@ source ~/projects/kubespray-venv/bin/activate
 - Install Kubespray dependencies
 
 ``` bash
-# Install dependencies from ``requirements.txt``
 pip install -r requirements.txt
 ```
 
@@ -161,10 +172,9 @@ pip install -r requirements.txt
 
 ### Create a new cluster configuration
 
-First copy the default settings from sample cluster.
+Start creating a copy of the default settings from sample cluster.
 
 ``` bash
-# Copy ``inventory/sample`` as ``inventory/mycluster``
 cp -rfp inventory/sample inventory/mycluster
 ```
 > Be sure you are still in the ~/projects/kubespray/ directory before executing this command!
@@ -177,11 +187,12 @@ Then customize your new cluster
 declare -a IPS=(<node1-ip> <node2-ip> ...)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
+
 - (optional) Rename your nodes or deactivate hostname renaming
 
-If not done, your cluster nodes will be named node1, node2, etc.
+If you skip this step, your cluster hostnames will be renamed node1, node2, etc.
 
-Edit file ~/projects/kubespray/inventory/mycluster/hosts.yaml
+You can either edit the file ~/projects/kubespray/inventory/mycluster/hosts.yaml
 
 ``` bash
 sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.yaml
@@ -189,21 +200,25 @@ sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.
 
 OR
 
-Keep the current hostnames
+keep the current hostnames
 
 ``` bash
 echo "override_system_hostname: false" >>  group_vars/all/all.yaml
 ```
 
-- Set Docker version to 19.03, since 18.09 is not available in apt sources
+- Set Docker version to 19.03
+
+The 18.09 version of Docker seems to be not available in apt sources, prefer the 19.03.
 
 ``` bash
 echo "docker_version: 19.03"  >> group_vars/all/docker.yaml
 ```
 
-- Set resolv.conf to the right file, only fixed for Ubuntu 18.* since 19.* are not supported.
+- Set resolv.conf
 
-See https://github.com/kubernetes-sigs/kubespray/pull/3335
+There is more than one *resolv.conf* file on your Ubuntu 18+ O/S, use the right one!
+
+A fix for Ubuntu 18.* has been [merged](https://github.com/kubernetes-sigs/kubespray/pull/3335) in Kubespray, but it does not apply on the not supported 19.* versions.
 
 ``` bash
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
@@ -317,9 +332,11 @@ For more detailed information, please refer to the official Kubernetes documenta
 
 In this tutorial, you will use a `nfs` volume type for its simplicity, accessiblity between nodes and capability to be dynamically provisioned.
 
+[[Top]](#table-of-contents)
+
 #### Set up the NFS server
 
-From [Vitux tutorial](https://vitux.com/install-nfs-server-and-client-on-ubuntu/?__cf_chl_jschl_tk__=50c8eadb5fa04314c2916407c2751f68687aeb48-1587555276-0-AWkNR6Qizn6tsLLBsSUH1l_YOBi7OZLqRBXQzexN7S5FrW4QxNdSiOTwuRQaub2rjdraGI6zFVbGeKntmz-ZQW76uKjX4COBy5N14m8WXi0BRXvUlWDMxEvmlKs8iUrosn1-ctl7DoZlWbMWGIOFkGljgabLZv3CHBb0e-RpDRcUmuqFnv6Ct9PLcS2VGadHYKIuK5z9nKzU3qKACh3wHROeVhVH1Ibsel8NhqGCdPCWYBJn4EwR9WkUjFvf1Rycgv9751PotGabEq2l-_jipEoKgeo29yIk-uaWemKOPBiNvxjKhlZwNigfLGMAm4Mmuv6qWuGEKqQNKfLDjQjSRWwoSOqrRMbnXFs92AQCMt5knujCrI6RCDW699xX_fhnSmVjLDq_ra-BT3nVTRJV1D8).
+Based on the [Vitux tutorial](https://vitux.com/install-nfs-server-and-client-on-ubuntu/?__cf_chl_jschl_tk__=50c8eadb5fa04314c2916407c2751f68687aeb48-1587555276-0-AWkNR6Qizn6tsLLBsSUH1l_YOBi7OZLqRBXQzexN7S5FrW4QxNdSiOTwuRQaub2rjdraGI6zFVbGeKntmz-ZQW76uKjX4COBy5N14m8WXi0BRXvUlWDMxEvmlKs8iUrosn1-ctl7DoZlWbMWGIOFkGljgabLZv3CHBb0e-RpDRcUmuqFnv6Ct9PLcS2VGadHYKIuK5z9nKzU3qKACh3wHROeVhVH1Ibsel8NhqGCdPCWYBJn4EwR9WkUjFvf1Rycgv9751PotGabEq2l-_jipEoKgeo29yIk-uaWemKOPBiNvxjKhlZwNigfLGMAm4Mmuv6qWuGEKqQNKfLDjQjSRWwoSOqrRMbnXFs92AQCMt5knujCrI6RCDW699xX_fhnSmVjLDq_ra-BT3nVTRJV1D8).
 
   - Install NFS server
 
@@ -353,9 +370,11 @@ systemctl restart nfs-kernel-server
 
 > You have to replace `subnetIP/24` by a correct CIDR.
 
+[[Top]](#table-of-contents)
+
 #### Define the `StorageClass` and the provisioner
 
-From [Yolanda tutorial](http://teknoarticles.blogspot.com/2018/10/setup-nfs-client-provisioner-in.html)
+Based on the [Yolanda tutorial](http://teknoarticles.blogspot.com/2018/10/setup-nfs-client-provisioner-in.html)
 
 We will use [external-storage](https://github.com/kubernetes-incubator/external-storage] template.
 
@@ -452,6 +471,8 @@ Just run:
 sudo snap install helm --classic
 ```
 
+[[Top]](#table-of-contents)
+
 ### Deploy JupyterHub from Helm chart
 
 You can now follow the [zero-to-jupyterhub tutorial](https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-jupyterhub/setup-jupyterhub.html)
@@ -511,3 +532,5 @@ helm upgrade --install $RELEASE jupyterhub/jupyterhub \
 
 Here we are, I hope this tutorial was helpful!
 Do not hesitate to make PR and have a great moment on JHub.
+
+[[Top]](#table-of-contents)
