@@ -132,19 +132,19 @@ Start by installing curl.
 sudo apt-get install curl
 ```
 
-Get the Kubespray source code from its repo, prefer a stable release vs master.
+Get the lastest Kubespray source code from its repo. 
+
+The latest release when writing this tutorial, v2.12.5, throws error not encountered in the master version.
+
+> It is probably due to not supported Ubuntu 19.10 and will be fixed in 20.04!
 
 ``` bash
 mkdir -p ~/projects/ && \
-cd ~/projects/ && \
-curl -L https://github.com/kubernetes-sigs/kubespray/archive/v2.12.5.tar.gz | tar xvz && \
-mv kubespray-2.12.5 kubespray && \
+curl -LJO https://github.com/kubernetes-sigs/kubespray/archive/master.zip && \
+unzip kubespray-master.zip -d kubespray && \
+rm kubespray-master.zip && \
 cd kubespray
 ```
-
-> The kubespray directory is renamed without version number to have generic code below
-
-> Update the version number to latest available
 
 [[Top]](#table-of-contents)
 
