@@ -517,7 +517,7 @@ From JHub doc:
 > When using this for testing, make sure you delete all other objects that the hub has created (such as user pods, user PVCs, etc) every time the hub restarts. Otherwise you might run into errors about duplicate resources.
 
 ``` bash
-cat << EOF >> jhub-config.yaml
+cat << EOF >> config.yaml
 
 hub:
   db:
