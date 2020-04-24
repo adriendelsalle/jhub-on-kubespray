@@ -357,29 +357,29 @@ Based on the [Vitux tutorial](https://vitux.com/install-nfs-server-and-client-on
 Just pick a machine on the same network as your cluster nodes (it can be one of them), and run:
 
 ``` bash
-apt-get install -y nfs-kernel-server
+sudo apt-get install -y nfs-kernel-server
 ```
   - Choose export directory
   
 Choose or create a directory and share it:
 
 ``` bash
-mkdir -p /mnt/my-nfs
+sudo mkdir -p /mnt/my-nfs
 ```
 
 As we want all clients to have access, change its permissions
 
 ``` bash
-chown nobody:nogroup /mnt/my-nfs
-chmod 777 /mnt/my-nfs
+sudo chown nobody:nogroup /mnt/my-nfs
+sudo chmod 777 /mnt/my-nfs
 ```
 
   - Do the NFS export
 
 ``` bash
-echo "/mnt/my-nfs <subnetIP/24>(rw,sync,no_subtree_check)" >> /etc/exports
-exportfs -a
-systemctl restart nfs-kernel-server
+echo "/mnt/my-nfs <subnetIP/24>(rw,sync,no_subtree_check)" | sudo tee /etc/exports
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
 ```
 
 > You have to replace `subnetIP/24` by a correct CIDR.
@@ -407,7 +407,7 @@ kind: StorageClass
 metadata:
   name: managed-nfs-storage
   annotations: 
-    storageclass.kubernetes.io/is-default-class: true
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: nfs-provisioner
 parameters:
   archiveOnDelete: "false"
