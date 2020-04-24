@@ -228,7 +228,7 @@ There is more than one *resolv.conf* file on your Ubuntu 18+ O/S, use the right 
 A fix for Ubuntu 18.* has been [merged](https://github.com/kubernetes-sigs/kubespray/pull/3335) in Kubespray, but it does not apply on the not supported 19.* versions.
 
 ``` bash
-echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> inventory/mycluster/group_vars/all/all.yaml
+echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> inventory/mycluster/group_vars/all/all.yml
 ```
 
 - Check localhost vs nodes usernames
