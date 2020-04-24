@@ -210,7 +210,7 @@ OR
 keep the current hostnames
 
 ``` bash
-echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/all.yaml
+echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/all.yml
 ```
 
 - Set Docker version to 19.03
@@ -218,7 +218,7 @@ echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/al
 The 18.09 version of Docker seems to be not available in apt sources, prefer the 19.03.
 
 ``` bash
-echo "docker_version: 19.03"  >> inventory/mycluster/group_vars/all/docker.yaml
+echo "docker_version: 19.03"  >> inventory/mycluster/group_vars/all/docker.yml
 ```
 
 - Set resolv.conf
