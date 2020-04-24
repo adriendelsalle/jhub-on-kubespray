@@ -88,7 +88,7 @@ You will be prompted twice for the password corresponding to <node-user> account
 ``` bash
 for ip in <node1-ip> <node2-ip> ...; do
    scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@$ip:/home/<node-user>/.ssh
-   ssh <node-user>@ip "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys && rm ~/.ssh/id_rsa.pub"
+   ssh <node-user>@$ip "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys"
 done
 ```
 
