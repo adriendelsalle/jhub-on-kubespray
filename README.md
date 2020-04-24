@@ -225,10 +225,6 @@ A fix for Ubuntu 18.* has been [merged](https://github.com/kubernetes-sigs/kubes
 echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> group_vars/all/all.yaml
 ```
 
-[[Top]](#table-of-contents)
-
-### Deploy your cluster!
-
 - Check localhost vs nodes usernames
 
 If your localhost username differ from a node username (the one that owns your SSH public key), you must specify it to Ansible by editing (manually) the hosts.yaml file.
@@ -247,7 +243,11 @@ all:
       ansible_ssh_user: bar
 ```
 
-- Do the deployment by running Ansible playbook command.
+[[Top]](#table-of-contents)
+
+### Deploy your cluster!
+
+It's time to deploy Kubernetes by running the Ansible playbook command.
 
 ``` bash
 ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml
