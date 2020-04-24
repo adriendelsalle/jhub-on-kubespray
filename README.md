@@ -275,7 +275,7 @@ The cluster is created but you currently have no access to its API for configura
 
 `kubectl` has been installed by Kubespray on master nodes of your cluster and configuration files saved in root home directory.
 
-If you want to access the cluster API from another computer on your network, install first kubectl.
+If you want to access the cluster API from another computer on your network, install `kubectl` first.
 
 ``` bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
