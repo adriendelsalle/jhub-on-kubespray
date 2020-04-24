@@ -126,6 +126,12 @@ done
 
 ### Get Kubespray
 
+Start by installing curl.
+
+``` bash
+sudo apt-get install curl
+```
+
 Get the Kubespray source code from its repo, prefer a stable release vs master.
 
 ``` bash
