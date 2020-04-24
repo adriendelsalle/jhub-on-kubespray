@@ -86,9 +86,9 @@ Copy your public key(s) in the ~/.ssh/authorized_keys file of the user accounts 
 You will be prompted twice for the password corresponding to <node-user> account, the first time for the public key upload using SSH and the second time for adding the public key in the authorized keys file.
    
 ``` bash
-for ip in <nod1-ip> <node2-ip> ...; do
-   scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@<node-ip>:/home/<node-user>/.ssh
-   ssh <node-user><node-ip> "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys" "rm ~/.ssh/id_rsa.pub"
+for ip in <node1-ip> <node2-ip> ...; do
+   scp /home/<local-user>/.ssh/id_rsa.pub <node-user>@$ip:/home/<node-user>/.ssh
+   ssh <node-user>@ip "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys && rm ~/.ssh/id_rsa.pub"
 done
 ```
 
@@ -103,7 +103,9 @@ Kubespray requires to turn on IPv4 forwarding. This should be done automatically
 To do it manually, run the following command:
 
 ``` bash
-echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+for ip in <node1-ip> <node2-ip> ...; do
+   ssh <node-user>@$ip "echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward"
+done
 ```
 
 [[Top]](#table-of-contents)
@@ -113,9 +115,8 @@ echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
 Turning swap off is required by Kubernetes. See this [issue](https://github.com/kubernetes/kubernetes/issues/53533) for more information.
 
 ``` bash
-for ip in <nod1-ip> <node2-ip> ...; do
-   sudo swapoff -a && \
-   sudo sed -i '/ swap / s/^/#/' /etc/fstab
+for ip in <node1-ip> <node2-ip> ...; do
+   ssh <node-user>@$ip "sudo swapoff -a && sudo sed -i '/ swap / s/^/#/' /etc/fstab"
 done
 ```
 
