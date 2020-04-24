@@ -1,6 +1,7 @@
 ## Table of Contents
-1. [Configuration used for this tutorial](#Configuration)
-2. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
+1. [Introduction](#introduction)
+2. [Configuration used for this tutorial](#Configuration)
+3. [Install Kubernetes using Kubespray](#Install-Kubernetes-using-Kubespray)
    1. [System update](#system-update)
    2. [SSH access](#ssh-access)
    3. [IPv4 forwarding](#IPv4-forwarding)
@@ -8,23 +9,27 @@
    3. [Get Kubespray](#Get-Kubespray)
    4. [Install Kubespray requirements](#Install-Kubespray-requirements)
    5. [Create a new cluster configuration](#Create-a-new-cluster-configuration)
-   6. [Deploy your cluster!](#Deploy-your-cluster!)
-3. [Still missing in your cluster](#still-missing-in-your-cluster)
+   6. [Deploy your cluster!](#Deploy-your-cluster)
+4. [Still missing in your cluster](#still-missing-in-your-cluster)
    1. [Set a `LoadBalancer`](#set-a-loadbalancer)
    2. [Set a `StorageClass` and a provisioner](#set-a-storageclass-and-a-provisioner)
-4. [Install JupyterHub](#install-jupyterhub)
+5. [Install JupyterHub](#install-jupyterhub)
    1. [Install Helm](#install-helm)
    2. [Deploy JupyterHub from Helm chart](#deploy-jupyterhub-from-helm-chart)
-5. [Enjoy!](#enjoy)
+
+---
+## Introduction
+
+This tutorial is about running a JupyterHub instance on a Kubernetes cluster deployed on bare metal.
+
+For this purpose and after several attemps with Minikube and kubeadm, with and without VM, I choosed Kubespray using Ansible to deploy Kubernetes. It offers the performance of a bare metal cluster but also scalability and production-ready type of cluster.
 
 ---
 ## Configuration
 
-This tutorial is about running a JupyterHub instance on a kube cluster deployed with kubespray on bare metal.
-
 - Hardware: 
-  - CPU: 2 preferable
-  - RAM: 1024MB/1500MB for worker/master nodes recommended, configurable in kubespray
+  - CPU: 2 preferable (no check)
+  - RAM: 1024MB/1500MB minimum for worker/master nodes enforced in Kubespray (configurable)
 - O/S: Ubuntu 19.10 Eoan
 - Kubespray: 2.12.5
 - Python: 3.7
@@ -502,10 +507,7 @@ helm upgrade --install $RELEASE jupyterhub/jupyterhub \
   --values config.yaml
 ```
 
-Never forget that the Helm chart version differ from JupyterHub version! See the [jupyterhub/helm-chart repo](https://github.com/jupyterhub/helm-chart).
+> Don't forget that the Helm chart version differ from JupyterHub version! See the [jupyterhub/helm-chart repo](https://github.com/jupyterhub/helm-chart).
 
----
-## Enjoy!
-
-I hope this tutorial was helpful!
+Here we are, I hope this tutorial was helpful!
 Do not hesitate to make PR and have a great moment on JHub.
