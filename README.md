@@ -210,7 +210,7 @@ OR
 keep the current hostnames
 
 ``` bash
-echo "override_system_hostname: false" >>  group_vars/all/all.yaml
+echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/all.yaml
 ```
 
 - Set Docker version to 19.03
