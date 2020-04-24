@@ -256,7 +256,8 @@ all:
 If you do not have turned on IPv4 and turned off swap manually, you can use:
 
 ``` bash
-ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root https://raw.githubusercontent.com/adriendelsalle/jhub-on-kubespray/master/kubespray/prepare-cluster.yaml
+curl -LJO https://raw.githubusercontent.com/adriendelsalle/jhub-on-kubespray/master/kubespray/prepare-cluster.yaml
+ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root prepare-cluster.yaml
 ```
 
 It's time to deploy Kubernetes by running the Ansible playbook command.
